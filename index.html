@@ -1,0 +1,120 @@
+<!DOCTYPE html> 
+<html lang="ne">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consumer Data Analysis</title>
+    <style>
+        body { 
+            font-family: 'Times New Roman', Times, serif; 
+            text-align: center; 
+            margin: 20px; 
+            background-color: #5af76f; /* Light Green Background */
+        }
+        h1 { font-size: 29px; color: #3710e6; margin-bottom: 5px; }
+        h2 { font-size: 23px; color: #1307c4; margin-bottom: 5px; }
+        h3 { font-size: 22px; color: #e61313; margin-bottom: 10px; }
+        img.logo { width: 120px; height: auto; margin-bottom: 10px; }
+        input { 
+            margin: 5px; padding: 10px; font-size: 16px; 
+            border: 1px solid #4814d4; border-radius: 5px; width: 80%;
+        }
+        button { 
+            margin: 5px; padding: 10px 15px; font-size: 16px; 
+            background-color: #523fbd; /* Blue color */
+            color: white; border: none; border-radius: 5px; 
+            cursor: pointer;
+        }
+        button:hover { background-color: #16c916; } /* Green on hover */
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
+        th, td { border: 1px solid black; padding: 8px; text-align: left; }
+        #noDataMessage {
+            font-size: 18px; 
+            color: red; 
+            margin-top: 10px;
+            display: none; /* Initially hidden */
+        }
+    </style>
+</head>
+<body>
+    
+    <img src="resil.png" alt="Company Logo" class="logo">
+    
+    <h1>NEPAL ELECTRICITY AUTHORITY</h1>
+    <h2>Dharan DCS</h2>
+    <h3>ग्राहकको बिवरण थाहा पाउनुहोस् !!!</h3>
+
+    <input type="text" id="searchInput" placeholder="SCNO, ID, NAME, METER NO">
+    <button onclick="searchData()">Search</button>
+
+    <p id="noDataMessage">ग्राहकको विवरण राख्नुहोस जस्तै : SCNO, ID, NAME, METER NO कुनै भर्नुहोस्</p>
+
+    <table id="dataTable">
+        <thead>
+            <tr>
+                <th>SCNO</th> <th>ID</th> <th>NAME</th> <th>METER NO</th>
+                <th>CATEGORY</th> <th>LOAD</th> <th>PREV_RDG</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbzJ2ObHmn4_zdGRU7o6XFhQvr6IPh7dQq9BuLSlYpmb350O9F3GV3trD-_woZag8HM/exec";  
+
+        async function fetchData() {
+            try {
+                let response = await fetch(API_URL);
+                let data = await response.json();
+                localStorage.setItem("offlineData", JSON.stringify(data));
+                return data;
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                return JSON.parse(localStorage.getItem("offlineData")) || [];
+            }
+        }
+
+        function searchData() {
+            let query = document.getElementById("searchInput").value.toLowerCase().trim();
+            let noDataMessage = document.getElementById("noDataMessage");
+            let data = JSON.parse(localStorage.getItem("offlineData")) || [];
+
+            if (query === "") {
+                noDataMessage.style.display = "block";
+                return;
+            } else {
+                noDataMessage.style.display = "none";
+            }
+
+            if (data.length === 0) {
+                alert("No offline data found. Please load data first.");
+                return;
+            }
+
+            let filteredData = data.filter(row => 
+                row.slice(0, 4).some(col => col.toString().toLowerCase().includes(query))
+            );
+
+            let tbody = document.querySelector("#dataTable tbody");
+            tbody.innerHTML = "";
+
+            if (filteredData.length === 0) {
+                noDataMessage.style.display = "block";
+                return;
+            }
+
+            filteredData.forEach(row => {
+                let tr = document.createElement("tr");
+                row.forEach(cell => {
+                    let td = document.createElement("td");
+                    td.textContent = cell;
+                    tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+            });
+        }
+
+        window.onload = fetchData;
+    </script>
+</body>
+</html>
