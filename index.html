@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="ne">
 <head>
     <meta charset="UTF-8">
@@ -9,7 +9,7 @@
             font-family: 'Times New Roman', Times, serif; 
             text-align: center; 
             margin: 20px; 
-            background-color:rgb(198, 188, 224);
+            background-color: rgb(198, 188, 224);
         }
         h1 { font-size: 29px; color: #3710e6; margin-bottom: 5px; }
         h2 { font-size: 23px; color: #1307c4; margin-bottom: 5px; }
@@ -52,16 +52,22 @@
     <table id="dataTable">
         <thead>
             <tr>
-                <th>SCNO</th> <th>ID</th> <th>NAME</th> <th>METER NO</th>
-                <th>CATEGORY</th> <th>LOAD</th> <th>PREV_RDG</th>
+                <th>SCNO</th>
+                <th>ID</th>
+                <th>NAME</th>
+                <th>METER NO</th>
+                <th>CATEGORY</th>
+                <th>LOAD</th>
+                <th>PREV_RDG</th>
             </tr>
         </thead>
         <tbody></tbody>
     </table>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbzJ2ObHmn4_zdGRU7o6XFhQvr6IPh7dQq9BuLSlYpmb350O9F3GV3trD-_woZag8HM/exec";  
+        const API_URL = "https://script.google.com/macros/s/AKfycbzJ2ObHmn4_zdGRU7o6XFhQvr6IPh7dQq9BuLSlYpmb350O9F3GV3trD-_woZag8HM/exec";
 
+        
         async function fetchData() {
             try {
                 let response = await fetch(API_URL);
@@ -74,8 +80,9 @@
             }
         }
 
+        
         function searchData() {
-            let query = document.getElementById("searchInput").value.toLowerCase().trim();
+            let query = document.getElementById("searchInput").value.trim();
             let noDataMessage = document.getElementById("noDataMessage");
             let data = JSON.parse(localStorage.getItem("offlineData")) || [];
 
@@ -91,8 +98,11 @@
                 return;
             }
 
+            
             let filteredData = data.filter(row => 
-                row.slice(0, 4).some(col => col.toString().toLowerCase().includes(query))
+                row[0].toString().trim() === query ||   
+                row[1].toString().trim() === query ||   
+                row[3].toString().trim() === query      
             );
 
             let tbody = document.querySelector("#dataTable tbody");
@@ -114,6 +124,7 @@
             });
         }
 
+        
         window.onload = fetchData;
     </script>
 </body>
