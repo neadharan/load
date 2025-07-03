@@ -1,140 +1,229 @@
 <!DOCTYPE html>
 <html lang="ne">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consumer Data Analysis</title>
-    <style>
-        body { 
-            font-family: 'Times New Roman', Times, serif; 
-            text-align: center; 
-            margin: 20px; 
-            background-color: rgb(198, 188, 224);
-        }
-        h1 { font-size: 29px; color: #3710e6; margin-bottom: 5px; }
-        h2 { font-size: 23px; color: #1307c4; margin-bottom: 5px; }
-        h3 { font-size: 22px; color: #e61313; margin-bottom: 10px; }
-        img.logo { width: 120px; height: auto; margin-bottom: 10px; }
-        input { 
-            margin: 5px; padding: 10px; font-size: 13px; 
-            border: 1px solid #341097; border-radius: 5px; width: 23%;
-        }
-        button { 
-            margin: 10px; padding: 10px; font-size: 16px; 
-            background-color: #300a97;
-            color: rgb(217, 231, 225); border: none; border-radius: 5px; 
-            cursor: pointer;
-        }
-        button:hover { background-color: #16c916; } 
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: rgb(135, 134, 230); }
-        th, td { border: 1px solid black; padding: 8px; text-align: left; }
-        #noDataMessage {
-            font-size: 18px; 
-            color: rgb(223, 161, 29); 
-            margin-top: 10px;
-            display: none;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Consumer Data Analysis</title>
+  <style>
+    body {
+      font-family: 'Times New Roman', Times, serif;
+      text-align: center;
+      margin: 20px;
+      background-color: rgb(194, 177, 238);
+    }
+
+    h1, h2, h3 {
+      margin: 5px;
+    }
+
+    h1 { font-size: 29px; color: #3710e6; }
+    h2 { font-size: 23px; color: #1307c4; }
+    h3 { font-size: 15px; color: #e61313; }
+
+    .logo {
+      width: 120px;
+      height: 120px;
+      margin-bottom: 10px;
+      border-radius: 57%;
+    }
+
+    input {
+      margin: 5px;
+      padding: 10px;
+      font-size: 13px;
+      border: 1px solid #341097;
+      border-radius: 5px;
+      width: 90%;
+      max-width: 400px;
+    }
+
+    button {
+      margin: 10px 5px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #300a97;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #16c916;
+    }
+
+    #noDataMessage {
+      font-size: 18px;
+      margin-top: 10px;
+      display: none;
+      padding: 12px;
+      border: 2px solid red;
+      background-color: #ffe5e5;
+      color: #c40000;
+      font-weight: bold;
+      border-radius: 8px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .card {
+      max-width: 480px;
+      margin: 20px auto;
+      padding: 18px;
+      border-radius: 20px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card:hover {
+      transform: scale(1.02);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    .row-box {
+      display: flex;
+      align-items: center;
+      margin: 10px 0;
+    }
+
+    .row-box .label {
+      min-width: 100px;
+      font-weight: bold;
+      text-align: left;
+      color: #da0909;
+      font-size: 15px;
+    }
+
+    .row-box .value {
+      background-color: #ffffffd9;
+      border: 1px solid #6c9edb;
+      border-radius: 10px;
+      padding: 8px 12px;
+      flex: 1;
+      margin-left: 10px;
+      text-align: left;
+      font-size: 15px;
+      font-weight: bold;
+      color: #2b2b2b;
+    }
+
+    /* Different gradient backgrounds for each card */
+    .card-color-0 { background: linear-gradient(135deg, #f8ffae, #43c6ac); }
+    .card-color-1 { background: linear-gradient(135deg, #a1c4fd, #c2e9fb); }
+    .card-color-2 { background: linear-gradient(135deg, #ffecd2, #fcb69f); }
+    .card-color-3 { background: linear-gradient(135deg, #d4fc79, #96e6a1); }
+    .card-color-4 { background: linear-gradient(135deg, #fbc2eb, #a6c1ee); }
+    .card-color-5 { background: linear-gradient(135deg, #f6d365, #fda085); }
+    .card-color-6 { background: linear-gradient(135deg, #e0c3fc, #8ec5fc); }
+    .card-color-7 { background: linear-gradient(135deg, #cfd9df, #e2ebf0); }
+  </style>
 </head>
 <body>
-    
-    <img src="resil.png" alt="Company Logo" class="logo">
-    
-    <h1>Nepal Electricity Authority</h1>
-    <h2>Dharan DCS</h2>
-    <h3>ग्राहकको बिवरण थाहा पाउनुहोस् !!!</h3>
 
-    <input type="text" id="searchInput" placeholder="SCNO, ID, NAME, METER NO">
-    <button onclick="searchData()">Search</button>
+  <img src="resil.png" alt="Company Logo" class="logo">
+  <h1>Nepal Electricity Authority</h1>
+  <h2>Dharan DCS</h2>
+  <h3>ग्राहकको बिवरण थाहा पाउनुहोस् !!!</h3>
 
-    <p id="noDataMessage">ग्राहकको विवरण राख्नुहोस जस्तै : SCNO, ID, NAME, METER NO कुनै भर्नुहोस्</p>
+  <input type="text" id="searchInput" placeholder="NAME, SCNO, ID, METER NO">
+  <br />
+  <button onclick="searchData()">Search</button>
+  <button onclick="clearData()">Clear</button>
 
-    <table id="dataTable">
-        <thead>
-            <tr>
-                <th>SCNO</th>
-                <th>ID</th>
-                <th>NAME</th>
-                <th>METER NO</th>
-                <th>CATEGORY</th>
-                <th>LOAD</th>
-                <th>PREV_RDG</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
+  <p id="noDataMessage"></p>
 
-    <script>
-        
-        const API_URL = "https://script.google.com/macros/s/AKfycbzJ2ObHmn4_zdGRU7o6XFhQvr6IPh7dQq9BuLSlYpmb350O9F3GV3trD-_woZag8HM/exec";
+  <div id="mobileCards"></div>
 
-        
-        async function fetchData() {
-            try {
-                let response = await fetch(API_URL);
-                let data = await response.json();
-                localStorage.setItem("offlineData", JSON.stringify(data));
-                return data;
-            } catch (error) {
-                console.error("Error fetching data:", error);
-                return JSON.parse(localStorage.getItem("offlineData")) || [];
-            }
-        }
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbzJ2ObHmn4_zdGRU7o6XFhQvr6IPh7dQq9BuLSlYpmb350O9F3GV3trD-_woZag8HM/exec";
+    const headers = ["SCNO", "ID", "NAME", "METER NO", "CATEGORY", "LOAD", "PREV_RDG"];
 
-        
-        function searchData() {
-            let query = document.getElementById("searchInput").value.trim().toLowerCase();
-            let noDataMessage = document.getElementById("noDataMessage");
-            let data = JSON.parse(localStorage.getItem("offlineData")) || [];
+    const colorClasses = [
+      'card-color-0', 'card-color-1', 'card-color-2', 'card-color-3',
+      'card-color-4', 'card-color-5', 'card-color-6', 'card-color-7'
+    ];
 
-            noDataMessage.style.display = "none";
+    async function fetchData() {
+      try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
+        localStorage.setItem("offlineData", JSON.stringify(data));
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    }
 
-            if (query === "") {
-                noDataMessage.textContent = "कृपया SCNO, ID, NAME, METER NO मध्ये कुनै एक भर्नुहोस्।";
-                noDataMessage.style.display = "block";
-                return;
-            }
+    function cleanName(name) {
+      return name.replace(/^(mr\.|mrs\.|m\/s\.|mr|mrs|m\/s)/i, '').trim();
+    }
 
-            if (data.length === 0) {
-                alert("No offline data found. Please load data first.");
-                return;
-            }
+    function searchData() {
+      const query = document.getElementById("searchInput").value.trim().toLowerCase();
+      const noData = document.getElementById("noDataMessage");
+      const cards = document.getElementById("mobileCards");
+      const data = JSON.parse(localStorage.getItem("offlineData")) || [];
 
-            
-            let filteredData = data.filter(row => 
-                row[0].toString().trim().toLowerCase() === query ||   // SCNO
-                row[1].toString().trim().toLowerCase() === query ||   // ID
-                row[3].toString().trim().toLowerCase() === query ||   // METER NO
-                cleanName(row[2]).toLowerCase().includes(query)      // NAME
-            );
+      noData.style.display = "none";
+      cards.innerHTML = "";
 
-            if (filteredData.length === 0) {
-                noDataMessage.textContent = "डेटा फेला परेन। कृपया SCNO,ID,METER NO,NAME लेख्नुहोस्।";
-                noDataMessage.style.display = "block";
-                return;
-            }
+      if (!query) {
+        noData.textContent = "कृपया SCNO, ID, NAME, METER NO मध्ये कुनै एक भर्नुहोस्।";
+        noData.style.display = "block";
+        return;
+      }
 
-            let tbody = document.querySelector("#dataTable tbody");
-            tbody.innerHTML = "";
+      const matched = data.filter(row =>
+        row[0]?.toString().trim().toLowerCase() === query ||
+        row[1]?.toString().trim().toLowerCase() === query ||
+        row[3]?.toString().trim().toLowerCase() === query ||
+        cleanName(row[2])?.toLowerCase() === query
+      );
 
-            filteredData.forEach(row => {
-                let tr = document.createElement("tr");
-                row.forEach(cell => {
-                    let td = document.createElement("td");
-                    td.textContent = cell;
-                    tr.appendChild(td);
-                });
-                tbody.appendChild(tr);
-            });
-        }
+      if (matched.length === 0) {
+        noData.textContent = "डेटा फेला परेन। कृपया SCNO,ID,METER NO,NAME मध्ये कुनै एक बाट Data खोज्नुहोस् । यदि नाम बाट Data खोज्नु हुन्छ भने पुरा नाम लेख्नुहोस् ।धन्यवाद!!!";
+        noData.style.display = "block";
+        return;
+      }
 
-        
-        function cleanName(name) {
-            return name.replace(/^(mr\.|mrs\.|m\/s\.|mr|mrs|m\/s)/i, '').trim();
-        }
+      matched.forEach((row, index) => {
+        const card = document.createElement("div");
+        const colorClass = colorClasses[index % colorClasses.length];
+        card.className = `card ${colorClass}`;
 
-       
-        window.onload = fetchData;
-    </script>
+        row.forEach((cell, i) => {
+          const line = document.createElement("div");
+          line.className = "row-box";
+
+          const label = document.createElement("div");
+          label.className = "label";
+          label.textContent = headers[i].toUpperCase() + ":";
+
+          const value = document.createElement("div");
+          value.className = "value";
+
+          if (i <= 3) {
+            value.textContent = cell.toString().toUpperCase();
+          } else {
+            value.textContent = cell;
+          }
+
+          line.appendChild(label);
+          line.appendChild(value);
+          card.appendChild(line);
+        });
+
+        cards.appendChild(card);
+      });
+    }
+
+    function clearData() {
+      document.getElementById("searchInput").value = "";
+      document.getElementById("noDataMessage").style.display = "none";
+      document.getElementById("mobileCards").innerHTML = "";
+    }
+
+    window.onload = fetchData;
+  </script>
 </body>
 </html>
