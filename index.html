@@ -9,16 +9,16 @@
       font-family: 'Times New Roman', Times, serif;
       text-align: center;
       margin: 20px;
-      background-color: rgb(194, 177, 238);
+      background-color: rgb(197, 183, 241);
     }
 
     h1, h2, h3 {
       margin: 5px;
     }
 
-    h1 { font-size: 29px; color: #3710e6; }
-    h2 { font-size: 23px; color: #1307c4; }
-    h3 { font-size: 15px; color: #e61313; }
+    h1 { font-size: 24px; color: #3710e6; }
+    h2 { font-size: 20px; color: #1307c4; }
+    h3 { font-size: 16px; color: #e61313; }
 
     .logo {
       width: 120px;
@@ -28,13 +28,23 @@
     }
 
     input {
-      margin: 5px;
-      padding: 10px;
-      font-size: 13px;
-      border: 1px solid #341097;
-      border-radius: 5px;
-      width: 90%;
-      max-width: 400px;
+      margin: 10px auto;
+      padding: 10px 15px;
+      font-size: 14px;
+      border: 2px solid #341097;
+      border-radius: 50px;
+      width: 85%;
+      max-width: 317px;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+      outline: none;
+      text-align: center;
+      background-color: #fff;
+      transition: all 0.3s ease-in-out;
+    }
+
+    input:focus {
+      border-color: #5f00c2;
+      box-shadow: 0 0 8px rgba(95, 0, 194, 0.3);
     }
 
     button {
@@ -108,7 +118,6 @@
       color: #2b2b2b;
     }
 
-    /* Different gradient backgrounds for each card */
     .card-color-0 { background: linear-gradient(135deg, #f8ffae, #43c6ac); }
     .card-color-1 { background: linear-gradient(135deg, #a1c4fd, #c2e9fb); }
     .card-color-2 { background: linear-gradient(135deg, #ffecd2, #fcb69f); }
@@ -117,6 +126,36 @@
     .card-color-5 { background: linear-gradient(135deg, #f6d365, #fda085); }
     .card-color-6 { background: linear-gradient(135deg, #e0c3fc, #8ec5fc); }
     .card-color-7 { background: linear-gradient(135deg, #cfd9df, #e2ebf0); }
+
+    #welcomeMessage {
+      margin-top: 20px;
+      padding: 20px;
+      background: linear-gradient(to right, #d7efff, #a0cfff);
+      border: 2px dashed #1c1cff;
+      border-radius: 15px;
+      font-size: 18px;
+      font-weight: bold;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .welcome-title {
+      font-size: 30px;
+      color: #002d7a;
+      margin-bottom: 10px;
+    }
+
+    .blinking {
+      animation: blink 1s infinite;
+      color: #ff0000;
+    }
+
+    @keyframes blink {
+      0% { opacity: 1; }
+      50% { opacity: 0; }
+      100% { opacity: 1; }
+    }
   </style>
 </head>
 <body>
@@ -126,19 +165,23 @@
   <h2>Dharan DCS</h2>
   <h3>ग्राहकको बिवरण थाहा पाउनुहोस् !!!</h3>
 
-  <input type="text" id="searchInput" placeholder="NAME, SCNO, ID, METER NO">
+  <input type="text" id="searchInput" placeholder="Search By Any One: NAME, SCNO, ID, METER NO">
   <br />
   <button onclick="searchData()">Search</button>
   <button onclick="clearData()">Clear</button>
 
   <p id="noDataMessage"></p>
 
-  <div id="mobileCards"></div>
+  <div id="mobileCards">
+    <div id="welcomeMessage">
+      <div class="welcome-title">Welcome !!!</div>
+      <div class="blinking">तपाईंको Search गरेको Data यहाँ देखिनेछ। कृपया Data Search Box मा गयर Search गर्नुहोस।</div>
+    </div>
+  </div>
 
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbzJ2ObHmn4_zdGRU7o6XFhQvr6IPh7dQq9BuLSlYpmb350O9F3GV3trD-_woZag8HM/exec";
     const headers = ["SCNO", "ID", "NAME", "METER NO", "CATEGORY", "LOAD", "PREV_RDG"];
-
     const colorClasses = [
       'card-color-0', 'card-color-1', 'card-color-2', 'card-color-3',
       'card-color-4', 'card-color-5', 'card-color-6', 'card-color-7'
@@ -167,6 +210,9 @@
       noData.style.display = "none";
       cards.innerHTML = "";
 
+      const welcome = document.getElementById("welcomeMessage");
+      if (welcome) welcome.remove();
+
       if (!query) {
         noData.textContent = "कृपया SCNO, ID, NAME, METER NO मध्ये कुनै एक भर्नुहोस्।";
         noData.style.display = "block";
@@ -181,7 +227,7 @@
       );
 
       if (matched.length === 0) {
-        noData.textContent = "डेटा फेला परेन। कृपया SCNO,ID,METER NO,NAME मध्ये कुनै एक बाट Data खोज्नुहोस् । यदि नाम बाट Data खोज्नु हुन्छ भने पुरा नाम लेख्नुहोस् ।धन्यवाद!!!";
+        noData.textContent = "तपाईले खोज्नु भयको Data फेला परेन। कृपया SCNO,ID,METER NO,NAME मध्ये कुनै एक बाट Data खोज्नुहोस्। धन्यवाद!";
         noData.style.display = "block";
         return;
       }
@@ -191,6 +237,16 @@
         const colorClass = colorClasses[index % colorClasses.length];
         card.className = `card ${colorClass}`;
 
+        // Add header inside the card
+        const headerInside = document.createElement("div");
+        headerInside.innerHTML = `
+          <h1>Nepal Electricity Authority</h1>
+          <h2>Dharan DCS</h2>
+          <h3>Consumer Details</h3>
+        `;
+        card.appendChild(headerInside);
+
+        // Add each row value
         row.forEach((cell, i) => {
           const line = document.createElement("div");
           line.className = "row-box";
@@ -201,12 +257,7 @@
 
           const value = document.createElement("div");
           value.className = "value";
-
-          if (i <= 3) {
-            value.textContent = cell.toString().toUpperCase();
-          } else {
-            value.textContent = cell;
-          }
+          value.textContent = i <= 3 ? cell.toString().toUpperCase() : cell;
 
           line.appendChild(label);
           line.appendChild(value);
@@ -220,7 +271,12 @@
     function clearData() {
       document.getElementById("searchInput").value = "";
       document.getElementById("noDataMessage").style.display = "none";
-      document.getElementById("mobileCards").innerHTML = "";
+      document.getElementById("mobileCards").innerHTML = `
+        <div id="welcomeMessage">
+          <div class="welcome-title">Welcome !!!</div>
+          <div class="blinking">तपाईंको Search गरेको Data यहाँ देखिनेछ। कृपया Data Search Box मा गयर Search गर्नुहोस।</div>
+        </div>
+      `;
     }
 
     window.onload = fetchData;
