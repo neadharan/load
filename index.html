@@ -30,9 +30,9 @@
     input {
       margin: 10px auto;
       padding: 10px 15px;
-      font-size: 14px;
+      font-size: 13px;
       border: 2px solid #341097;
-      border-radius: 50px;
+      border-radius: 60px;
       width: 85%;
       max-width: 317px;
       box-shadow: 0 3px 6px rgba(0,0,0,0.1);
@@ -82,6 +82,7 @@
       margin: 20px auto;
       padding: 18px;
       border-radius: 20px;
+      position: relative;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
       transition: transform 0.2s, box-shadow 0.2s;
     }
@@ -156,6 +157,24 @@
       50% { opacity: 0; }
       100% { opacity: 1; }
     }
+
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #mobileCards, #mobileCards * {
+        visibility: visible;
+      }
+      #mobileCards {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+      }
+      #printBtn {
+        display: none;
+      }
+    }
   </style>
 </head>
 <body>
@@ -169,13 +188,14 @@
   <br />
   <button onclick="searchData()">Search</button>
   <button onclick="clearData()">Clear</button>
+  <button id="printBtn" onclick="printCards()" style="display:none;">Print</button>
 
   <p id="noDataMessage"></p>
 
   <div id="mobileCards">
     <div id="welcomeMessage">
       <div class="welcome-title">Welcome !!!</div>
-      <div class="blinking">तपाईंले  Search गरेको Data यहाँ देखिनेछ। कृपया Data Search Box मा गयर Search गर्नुहोस।</div>
+      <div class="blinking">तपाईंले Search गरेको Data यहाँ देखिनेछ। कृपया Data Search Box मा गयर Search गर्नुहोस।</div>
     </div>
   </div>
 
@@ -227,26 +247,36 @@
       );
 
       if (matched.length === 0) {
-        noData.textContent = "तपाईले खोज्नु भयको Data फेला परेन। कृपया SCNO,ID,METER NO,NAME मध्ये कुनै एक बाट Data खोज्नुहोस्। धन्यवाद!";
+        noData.textContent = "तपाईले खोज्नु भयको Data फेला परेन। कृपया SCNO,ID,METER NO,NAME मध्ये कुनै एक बाट Data खोज्नुहोस् । यदि नाम बाट Data खोज्दै हुनुन्छ भने पुरा नाम लेख्नुहोस् अथवा  Meter No बाट Data खोज्दै हुनुन्छ भने कृपया Meter No को अगाडी यदि '0' बाट सुरु छ भने '0' नराखी खोजि गर्नुहोस । उदाहरण मीटर नम्बर '05845687,000054875,002548678' यस्तो प्रकारका छन् भने ।धन्यवाद!!!";
         noData.style.display = "block";
         return;
       }
+
+      document.getElementById("printBtn").style.display = "inline-block";
 
       matched.forEach((row, index) => {
         const card = document.createElement("div");
         const colorClass = colorClasses[index % colorClasses.length];
         card.className = `card ${colorClass}`;
 
-        // Add header inside the card
+        const logo = document.createElement("img");
+        logo.src = "resil.png";
+        logo.style.position = "absolute";
+        logo.style.top = "10px";
+        logo.style.left = "10px";
+        logo.style.width = "50px";
+        logo.style.height = "50px";
+        logo.style.borderRadius = "50%";
+        card.appendChild(logo);
+
         const headerInside = document.createElement("div");
         headerInside.innerHTML = `
-          <h1>Nepal Electricity Authority</h1>
+          <h1 style="margin-top:0;">Nepal Electricity Authority</h1>
           <h2>Dharan DCS</h2>
-          <h3>Consumer Details</h3>
+          <h3>Consumer Details Card</h3>
         `;
         card.appendChild(headerInside);
 
-        // Add each row value
         row.forEach((cell, i) => {
           const line = document.createElement("div");
           line.className = "row-box";
@@ -271,12 +301,17 @@
     function clearData() {
       document.getElementById("searchInput").value = "";
       document.getElementById("noDataMessage").style.display = "none";
+      document.getElementById("printBtn").style.display = "none";
       document.getElementById("mobileCards").innerHTML = `
         <div id="welcomeMessage">
           <div class="welcome-title">Welcome !!!</div>
           <div class="blinking">तपाईंले Search गरेको Data यहाँ देखिनेछ। कृपया Data Search Box मा गयर Search गर्नुहोस।</div>
         </div>
       `;
+    }
+
+    function printCards() {
+      window.print();
     }
 
     window.onload = fetchData;
