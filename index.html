@@ -247,7 +247,7 @@
       );
 
       if (matched.length === 0) {
-        noData.textContent = "तपाईले खोज्नु भयको Data फेला परेन। कृपया SCNO,ID,METER NO,NAME मध्ये कुनै एक बाट Data खोज्नुहोस् । यदि नाम बाट Data खोज्दै हुनुन्छ भने पुरा नाम लेख्नुहोस् अथवा  Meter No बाट Data खोज्दै हुनुन्छ भने कृपया Meter No को अगाडी यदि '0' बाट सुरु छ भने '0' नराखी खोजि गर्नुहोस । उदाहरण मीटर नम्बर '05845687,000054875,002548678' यस्तो प्रकारका छन् भने ।धन्यवाद!!!";
+        noData.textContent = "तपाईले खोज्नु भयको Data फेला परेन। कृपया SCNO,ID,METER NO,NAME मध्ये कुनै एक बाट Data खोज्नुहोस् । यदि तपाई नाम बाट Data खोज्दै हुनुन्छ भने ? ग्नाहकहरूकाे  (First Neme ,Middle Name,Last Name) पुरा नाम लेखि Data खोज्नुहोस् !!! अथवा  Meter No बाट Data खोज्दै हुनुन्छ भने ? कृपया Meter No को अगाडी यदि '0' बाट सुरु छ भने '0' नराखी खोजि गर्नुहोस् । उदाहरण मीटर नम्बर '05845687,000054875,002548678' यस्ता प्रकारका छन् भने ।धन्यवाद!!!";
         noData.style.display = "block";
         return;
       }
@@ -305,7 +305,7 @@
       document.getElementById("mobileCards").innerHTML = `
         <div id="welcomeMessage">
           <div class="welcome-title">Welcome !!!</div>
-          <div class="blinking">तपाईंले Search गरेको Data यहाँ देखिनेछ। कृपया Data Search Box मा गयर Search गर्नुहोस।</div>
+          <div class="blinking">तपाईंले Search गरेको Data यहाँ देखिनेछ। कृपया Data Search Box मा गएर Search गर्नुहोस।</div>
         </div>
       `;
     }
