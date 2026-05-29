@@ -184,8 +184,13 @@
   <h2>Dharan DCS</h2>
   <h3>ग्राहकको बिवरण थाहा पाउनुहोस् !!!</h3>
 
-  <input type="text" id="searchInput" placeholder="Search By Any One: NAME, SCNO, ID, METER NO">
+  <!-- ONLY UPDATED PLACE -->
+  <input type="text" 
+id="searchInput" 
+placeholder="Search By Any One: NAME, SCNO, ID, METER NO, PHONE NO"
+style="max-width:350px; width:95%; font-size:12px;">
   <br />
+
   <button onclick="searchData()">Search</button>
   <button onclick="clearData()">Clear</button>
   <button id="printBtn" onclick="printCards()" style="display:none;">Print</button>
@@ -194,127 +199,145 @@
 
   <div id="mobileCards">
     <div id="welcomeMessage">
-      <div class="welcome-title">Welcome !!!</div>
+      <div class="welcome-title">🙏 Welcome 🙏</div>
       <div class="blinking">तपाईंले Search गरेको Data यहाँ देखिनेछ। कृपया Data Search Box मा गयर Search गर्नुहोस।</div>
     </div>
   </div>
 
-  <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbzJ2ObHmn4_zdGRU7o6XFhQvr6IPh7dQq9BuLSlYpmb350O9F3GV3trD-_woZag8HM/exec";
-    const headers = ["SCNO", "ID", "NAME", "METER NO", "CATEGORY", "LOAD", "PREV_RDG"];
-    const colorClasses = [
-      'card-color-0', 'card-color-1', 'card-color-2', 'card-color-3',
-      'card-color-4', 'card-color-5', 'card-color-6', 'card-color-7'
-    ];
+ <!-- ONLY THIS PART REPLACE INSIDE YOUR OLD CODE -->
 
-    async function fetchData() {
-      try {
-        const response = await fetch(API_URL);
-        const data = await response.json();
-        localStorage.setItem("offlineData", JSON.stringify(data));
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
+<script>
+  const API_URL = "https://script.google.com/macros/s/AKfycbzJ2ObHmn4_zdGRU7o6XFhQvr6IPh7dQq9BuLSlYpmb350O9F3GV3trD-_woZag8HM/exec";
+  const headers = ["SCNO", "ID", "NAME", "METER NO", "CATEGORY", "LOAD", "गत महिनाकाे रीडिङ्ग अँक वा नयाँ मिटरकाे रीडिङ्ग अँक", "गत महिना रीडिङ्ग भएकाे वा नयाँ मिटरकाे रीडिङ्ग हुने सुरु महिना र साल", "फाेन नम्बर"];
+  const colorClasses = [
+    'card-color-0', 'card-color-1', 'card-color-2', 'card-color-3',
+    'card-color-4', 'card-color-5', 'card-color-6', 'card-color-7'
+  ];
+
+  async function fetchData() {
+    try {
+      const response = await fetch(API_URL);
+      const data = await response.json();
+      localStorage.setItem("offlineData", JSON.stringify(data));
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  }
+
+  function cleanName(name) {
+    return name.replace(/^(mr\.|mrs\.|m\/s\.|mr|mrs|m\/s)/i, '').trim();
+  }
+
+  function searchData() {
+    const query = document.getElementById("searchInput").value.trim().toLowerCase();
+    const noData = document.getElementById("noDataMessage");
+    const cards = document.getElementById("mobileCards");
+    const data = JSON.parse(localStorage.getItem("offlineData")) || [];
+
+    noData.style.display = "none";
+    cards.innerHTML = "";
+
+    const welcome = document.getElementById("welcomeMessage");
+    if (welcome) welcome.remove();
+
+    if (!query) {
+      noData.textContent = "कृपया SCNO, ID, NAME, METER NO वा PHONE NO मध्ये कुनै एक भर्नुहोस्।";
+      noData.style.display = "block";
+      return;
     }
 
-    function cleanName(name) {
-      return name.replace(/^(mr\.|mrs\.|m\/s\.|mr|mrs|m\/s)/i, '').trim();
-    }
+    const matched = data.filter(row => {
 
-    function searchData() {
-      const query = document.getElementById("searchInput").value.trim().toLowerCase();
-      const noData = document.getElementById("noDataMessage");
-      const cards = document.getElementById("mobileCards");
-      const data = JSON.parse(localStorage.getItem("offlineData")) || [];
+      const scno = row[0] ? row[0].toString().trim().toLowerCase() : "";
+      const id = row[1] ? row[1].toString().trim().toLowerCase() : "";
+      const name = row[2] ? cleanName(row[2].toString()).toLowerCase() : "";
+      const meter = row[3] ? row[3].toString().trim().toLowerCase() : "";
 
-      noData.style.display = "none";
-      cards.innerHTML = "";
+      /* I COLUMN PHONE NUMBER */
+      const phone = row[8]
+        ? row[8].toString().replace(/\s+/g, '').trim().toLowerCase()
+        : "";
 
-      const welcome = document.getElementById("welcomeMessage");
-      if (welcome) welcome.remove();
+      const searchPhone = query.replace(/\s+/g, '');
 
-      if (!query) {
-        noData.textContent = "कृपया SCNO, ID, NAME, METER NO मध्ये कुनै एक भर्नुहोस्।";
-        noData.style.display = "block";
-        return;
-      }
-
-      const matched = data.filter(row =>
-        row[0]?.toString().trim().toLowerCase() === query ||
-        row[1]?.toString().trim().toLowerCase() === query ||
-        row[3]?.toString().trim().toLowerCase() === query ||
-        cleanName(row[2])?.toLowerCase() === query
+      return (
+        scno === query ||
+        id === query ||
+        meter === query ||
+        name === query ||
+        phone === searchPhone
       );
+    });
 
-      if (matched.length === 0) {
-        noData.textContent = "तपाईले खोज्नु भयको Data फेला परेन। कृपया SCNO,ID,METER NO,NAME मध्ये कुनै एक बाट Data खोज्नुहोस् । यदि तपाई नाम बाट Data खोज्दै हुनुन्छ भने ? ग्नाहकहरूकाे  (First Neme ,Middle Name,Last Name) पुरा नाम लेखि Data खोज्नुहोस् !!! अथवा  Meter No बाट Data खोज्दै हुनुन्छ भने ? कृपया Meter No को अगाडी यदि '0' बाट सुरु छ भने '0' नराखी खोजि गर्नुहोस् । उदाहरण मीटर नम्बर '05845687,000054875,002548678' यस्ता प्रकारका छन् भने ।धन्यवाद!!!";
-        noData.style.display = "block";
-        return;
-      }
-
-      document.getElementById("printBtn").style.display = "inline-block";
-
-      matched.forEach((row, index) => {
-        const card = document.createElement("div");
-        const colorClass = colorClasses[index % colorClasses.length];
-        card.className = `card ${colorClass}`;
-
-        const logo = document.createElement("img");
-        logo.src = "resil.png";
-        logo.style.position = "absolute";
-        logo.style.top = "10px";
-        logo.style.left = "10px";
-        logo.style.width = "50px";
-        logo.style.height = "50px";
-        logo.style.borderRadius = "50%";
-        card.appendChild(logo);
-
-        const headerInside = document.createElement("div");
-        headerInside.innerHTML = `
-          <h1 style="margin-top:0;">Nepal Electricity Authority</h1>
-          <h2>Dharan DCS</h2>
-          <h3>Consumer Details Card</h3>
-        `;
-        card.appendChild(headerInside);
-
-        row.forEach((cell, i) => {
-          const line = document.createElement("div");
-          line.className = "row-box";
-
-          const label = document.createElement("div");
-          label.className = "label";
-          label.textContent = headers[i].toUpperCase() + ":";
-
-          const value = document.createElement("div");
-          value.className = "value";
-          value.textContent = i <= 3 ? cell.toString().toUpperCase() : cell;
-
-          line.appendChild(label);
-          line.appendChild(value);
-          card.appendChild(line);
-        });
-
-        cards.appendChild(card);
-      });
+    if (matched.length === 0) {
+      noData.textContent = "तपाईले खोज्नु भयको Data फेला परेन। कृपया Scno, ID, Meter No, Name, Phone No,मध्ये कुनै एक बाट Data खोज्नुहोस् । यदि तपाई नाम बाट Data खोज्दै हुनुन्छ भने ? ग्नाहकहरूकाे  (First Neme ,Middle Name,Last Name) पुरा नाम लेखि Data खाेज्नुहोस !!! अथवा  Meter No बाट Data खोज्दै हुनुन्छ भने ? कृपया Meter No को अगाडी यदि '0' बाट सुरु छ भने कुनै पनि '0' नराखी खोजि गर्नुहोस् । उदाहरण मीटर नम्बर '05845687,000054875,002548678'यस्ता प्रकारका छन् भने ।धन्यवाद!!!";
+      noData.style.display = "block";
+      return;
     }
 
-    function clearData() {
-      document.getElementById("searchInput").value = "";
-      document.getElementById("noDataMessage").style.display = "none";
-      document.getElementById("printBtn").style.display = "none";
-      document.getElementById("mobileCards").innerHTML = `
-        <div id="welcomeMessage">
-          <div class="welcome-title">Welcome !!!</div>
-          <div class="blinking">तपाईंले Search गरेको Data यहाँ देखिनेछ। कृपया Data Search Box मा गएर Search गर्नुहोस।</div>
-        </div>
+    document.getElementById("printBtn").style.display = "inline-block";
+
+    matched.forEach((row, index) => {
+      const card = document.createElement("div");
+      const colorClass = colorClasses[index % colorClasses.length];
+      card.className = `card ${colorClass}`;
+
+      const logo = document.createElement("img");
+      logo.src = "resil.png";
+      logo.style.position = "absolute";
+      logo.style.top = "10px";
+      logo.style.left = "10px";
+      logo.style.width = "50px";
+      logo.style.height = "50px";
+      logo.style.borderRadius = "50%";
+      card.appendChild(logo);
+
+      const headerInside = document.createElement("div");
+      headerInside.innerHTML = `
+        <h1 style="margin-top:0;">Nepal Electricity Authority</h1>
+        <h2>Dharan DCS</h2>
+        <h3>Consumer Details Card</h3>
       `;
-    }
+      card.appendChild(headerInside);
 
-    function printCards() {
-      window.print();
-    }
+      row.forEach((cell, i) => {
+        const line = document.createElement("div");
+        line.className = "row-box";
 
-    window.onload = fetchData;
-  </script>
+        const label = document.createElement("div");
+        label.className = "label";
+        label.textContent = headers[i].toUpperCase() + ":";
+
+        const value = document.createElement("div");
+        value.className = "value";
+        value.textContent = i <= 3 ? cell.toString().toUpperCase() : cell;
+
+        line.appendChild(label);
+        line.appendChild(value);
+        card.appendChild(line);
+      });
+
+      cards.appendChild(card);
+    });
+  }
+
+  function clearData() {
+    document.getElementById("searchInput").value = "";
+    document.getElementById("noDataMessage").style.display = "none";
+    document.getElementById("printBtn").style.display = "none";
+    document.getElementById("mobileCards").innerHTML = `
+      <div id="welcomeMessage">
+        <div class="welcome-title">Welcome !!!</div>
+        <div class="blinking">तपाईंले Search गरेको Data यहाँ देखिनेछ। कृपया Data Search Box मा गएर Search गर्नुहोस।</div>
+      </div>
+    `;
+  }
+
+  function printCards() {
+    window.print();
+  }
+
+  window.onload = fetchData;
+</script>
 </body>
 </html>
